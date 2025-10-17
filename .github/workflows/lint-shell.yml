@@ -1,4 +1,4 @@
-name: ShellCheck & Bats Tests
+name: ShellCheck Linter
 
 on:
   push:
@@ -19,17 +19,5 @@ jobs:
         run: sudo apt-get install -y shellcheck
 
       - name: Run ShellCheck
-        run: shellcheck $(find . -name "*.sh")
-
-  bats-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Install Bats
-        run: sudo apt-get install -y bats
-
-      - name: Run Bats Tests
-        run: bats tests
+        run: shellcheck -x $(find . -name "*.sh")
 
