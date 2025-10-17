@@ -16,8 +16,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install ShellCheck
-        run: sudo apt-get install -y shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
 
-      - name: Run ShellCheck
-        run: shellcheck -x $(find . -name "*.sh")
+      - name: Run ShellCheck on all .sh files
+        run: |
+          find . -name "*.sh" -print0 | xargs -0 shellcheck -x
 
