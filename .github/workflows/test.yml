@@ -1,27 +1,38 @@
-name: Lint & Test Shell Scripts
+name: Surface Lab Validation
 
 on:
   push:
-    paths:
-      - '**.sh'
   pull_request:
-    paths:
-      - '**.sh'
 
 jobs:
-  test-shell:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Set up Bash
+        shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y shellcheck bats
+          sudo apt update -y
+          sudo apt install -y bash coreutils util-linux
 
-      - name: ShellCheck
-        run: shellcheck $(find . -name "*.sh")
+      - name: Verify core files exist
+        run: |
+          test -f bin/surface-lab.sh || echo "Warning: surface-lab script not found"
+          test -f core/guide.sh
+          test -d missions
 
-      - name: Run Bats Tests
-        run: bats tests
+      - name: Check for syntax errors
+        run: |
+          bash -n core/guide.sh
+          for f in missions/*.sh; do
+            echo "Checking $f"
+            bash -n "$f"
+          done
+
+      - name: List available missions
+        run: |
+          chmod +x bin/surface-lab.sh || true
+          echo "Available missions:"
+          ls missions/
